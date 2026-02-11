@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>智能答疑机器人</title>
+    <style>
+        body { margin: 0; padding: 20px; }
+        iframe { width: 100%; height: 600px; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <h1>智能答疑机器人</h1>
+    <iframe 
+        src="https://a536077731ba4de7932b47de4f8064a8/chat"
+        frameborder="0"
+        allowfullscreen>
+    </iframe>
+</body>
+</html>
