@@ -9,22 +9,23 @@
   
   <!-- 引入 Coze SDK -->
   <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.19/libs/cn/index.js"></script>
-  
-  <script>
-      new CozeWebSDK.WebChatClient({
-        config: {
-          bot_id: '7606037508790992923', // 你的 Bot ID
-        },
-        componentProps: {
-          title: '汤昱的 AI 助理', // 建议改个好听的名字
-        },
-        auth: {
-          type: 'token',
-          // 注意：不要把 token 直接暴露在公网代码里，虽然是 Demo 没关系，但真实上线要小心
-          token: 'cztei_qXquNulq9MokWFKGFfmJyituxWYVjRT8A13MrHFiNv6Lbq5ovEI5V1E5xmgXlKQn6', 
-        },
-      });
-  </script>
+<script>
+  new CozeWebSDK.WebChatClient({
+    config: {
+      bot_id: '7606037508790992923',
+    },
+    componentProps: {
+      title: 'Coze',
+    },
+    auth: {
+      type: 'token',
+      token: 'cztei_lZZ5ieR9wzEEeK48ihLYtAvtQlzZmcSLCVHmrTmAOk8bg5DP9pOXfA6CeMwcr8jIJ',
+      onRefreshToken: function () {
+        return 'async () => 'token''
+      }
+    }
+  });
+</script>
   
 </body>
 </html>
