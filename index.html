@@ -1,31 +1,12 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <title>炫舞代理物料助手</title>
-</head>
-<body>
-  <!-- 你的网页原有内容 -->
-  <h1>炫舞代理物料中心</h1>
-  
-  <!-- 引入 Coze SDK -->
-  <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.19/libs/cn/index.js"></script>
-<script>
-  new CozeWebSDK.WebChatClient({
-    config: {
-      bot_id: '7606037508790992923',
-    },
-    componentProps: {
-      title: 'Coze',
-    },
-    auth: {
-      type: 'token',
-      token: 'cztei_lZZ5ieR9wzEEeK48ihLYtAvtQlzZmcSLCVHmrTmAOk8bg5DP9pOXfA6CeMwcr8jIJ',
-      onRefreshToken: function () {
-        return 'async () => 'token''
-      }
-    }
-  });
-</script>
-  
-</body>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="./main.css" />
+  </head>
+  <body>  
+    <!-- Install SDK -->
+    <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.20/libs/cn/index.js"></script>
+    <script src="./index.js"></script>
+  </body>
 </html>
