@@ -3,6 +3,12 @@
 <head>
     <meta charset="utf-8">
     <title>炫舞圆宝助手</title>
+    
+    <!-- 禁用缓存，防止用户看到旧版本 -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
     <style>
         body {
             font-family: "Microsoft YaHei", sans-serif;
@@ -14,70 +20,115 @@
             margin: 0;
         }
         h1 { color: #333; }
+        
+        /* 加载提示样式 */
+        #loading {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: none;
+        }
     </style>
 </head>
 <body>
 
 <h1>欢迎来到炫舞世界 💃</h1>
 
-<!-- 引入 SDK -->
+<!-- 加载提示 -->
+<div id="loading">正在加载聊天助手...</div>
+
+<!-- 引入 Coze SDK -->
 <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.20/libs/cn/index.js"></script>
 
 <script>
-    // 🛠️ 优化点：生成一个随机的用户ID
-    // 这样每个打开网页的人都有独立的聊天记录，不会串号
-    const randomUserId = 'user_' + Math.random().toString(36).slice(2, 11);
-
-    const cozeWebSDK = new CozeWebSDK.WebChatClient({
-        config: {
-            bot_id: '7606037508790992923', 
-        },
-        auth: {
-            type: 'token', 
-            // 注意：正式上线时建议不要把 Token 直接暴露在前端代码中
-            token: 'pat_vShCWDu8XIDPZhUI5NVJCwBKa95jZTY7kQsJBwvHUAz3RErR8u2aCff9pN3LIMOh', 
-            onRefreshToken: async () => '' // 这里的逻辑如果不用可以留空
-        },
-        // 🛠️ 优化点：使用动态用户信息
-        userInfo: {
-            id: randomUserId, 
-            url: 'https://lf-coze-web-cdn.coze.cn/obj/eden-cn/lm-lgvj/ljhwZthlaukjlkulzlp/coze/coze-logo.png',
-            nickname: '炫舞玩家', 
-        },
-        ui: {
-            base: {
-                icon: 'https://lf-coze-web-cdn.coze.cn/obj/eden-cn/lm-lgvj/ljhwZthlaukjlkulzlp/coze/chatsdk-logo.png',
-                layout: 'pc', 
-                lang: 'zh-CN', // 🛠️ 优化点：强制使用中文界面
-                zIndex: 1000
-            },
-            header: {
-                isShow: true,
-                isNeedClose: true,
-            },
-            footer: {
-                isShow: false, // 🛠️ 优化点：隐藏底部 "Powered by..." 显得更干净
-            },
-            chatBot: {
-                title: '炫舞圆宝助手', 
-                width: 600, // 🛠️ 优化点：加宽到 480px，电脑上看更舒服
-                isNeedAudio: false, // 如果不需要语音转文字，可以关掉减少干扰
-                isNeedFeedback: true, 
-                feedback: {
-                    isNeedFeedback: true,
-                    feedbackPanel: {
-                        title: '回答得准确吗？',
-                        placeholder: '请告诉我们哪里需要改进...',
-                        tags: [
-                            { label: '回答不准确', isNeedDetail: false },
-                            { label: '逻辑混乱', isNeedDetail: false },
-                            { label: '其他建议', isNeedDetail: true },
-                        ],
+    // 显示加载提示
+    document.getElementById('loading').style.display = 'block';
+    
+    // 🔧 核心修复：等待 SDK 加载完成
+    window.addEventListener('load', function() {
+        
+        // 🔧 修复1：使用 sessionStorage 缓存用户ID（刷新页面不会丢失）
+        let clientUserId = sessionStorage.getItem('coze_user_id');
+        
+        if (!clientUserId) {
+            // 生成唯一ID：时间戳 + 双重随机数（确保绝对不重复）
+            clientUserId = 'user_' + new Date().getTime() + '_' + 
+                          Math.random().toString(36).slice(2) + 
+                          Math.random().toString(36).slice(2);
+            sessionStorage.setItem('coze_user_id', clientUserId);
+        }
+        
+        console.log('🔑 当前用户ID:', clientUserId); // 方便调试
+        
+        // 🔧 修复2：添加错误处理
+        try {
+            const cozeWebSDK = new CozeWebSDK.WebChatClient({
+                config: {
+                    bot_id: '7606037508790992923',
+                },
+                auth: {
+                    type: 'token',
+                    token: 'pat_vShCWDu8XIDPZhUI5NVJCwBKa95jZTY7kQsJBwvHUAz3RErR8u2aCff9pN3LIMOh',
+                    onRefreshToken: async () => ''
+                },
+                userInfo: {
+                    id: clientUserId, // 使用缓存的用户ID
+                    url: 'https://lf-coze-web-cdn.coze.cn/obj/eden-cn/lm-lgvj/ljhwZthlaukjlkulzlp/coze/coze-logo.png',
+                    nickname: '炫舞玩家_' + clientUserId.slice(-4), // 昵称加后缀，方便区分
+                },
+                ui: {
+                    base: {
+                        icon: 'https://lf-coze-web-cdn.coze.cn/obj/eden-cn/lm-lgvj/ljhwZthlaukjlkulzlp/coze/chatsdk-logo.png',
+                        layout: 'pc',
+                        lang: 'zh-CN',
+                        zIndex: 9999 // 提高层级，防止被遮挡
+                    },
+                    header: {
+                        isShow: true,
+                        isNeedClose: true,
+                    },
+                    footer: {
+                        isShow: false,
+                    },
+                    chatBot: {
+                        title: '炫舞圆宝助手',
+                        width: 600,
+                        isNeedAudio: false,
+                        isNeedFeedback: true,
+                        feedback: {
+                            isNeedFeedback: true,
+                            feedbackPanel: {
+                                title: '回答得准确吗？',
+                                placeholder: '请告诉我们哪里需要改进...',
+                                tags: [
+                                    { label: '回答不准确', isNeedDetail: false },
+                                    { label: '逻辑混乱', isNeedDetail: false },
+                                    { label: '其他建议', isNeedDetail: true },
+                                ],
+                            },
+                        },
                     },
                 },
-            },
-        },
+            });
+            
+            console.log('✅ Coze SDK 初始化成功！');
+            
+            // 隐藏加载提示
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+            }, 1000);
+            
+        } catch (error) {
+            console.error('❌ Coze SDK 初始化失败:', error);
+            document.getElementById('loading').innerHTML = '聊天助手加载失败，请刷新页面重试';
+            document.getElementById('loading').style.background = 'rgba(255,0,0,0.7)';
+        }
     });
 </script>
+
 </body>
 </html>
