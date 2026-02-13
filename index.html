@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <title>炫舞圆宝助手</title>
     
-    
     <style>
         body {
             font-family: "Microsoft YaHei", sans-serif;
@@ -47,6 +46,9 @@
     // 🔧 核心修复：等待 SDK 加载完成
     window.addEventListener('load', function() {
         
+        // ✅ 修复：先声明变量，从 sessionStorage 读取
+        let clientUserId = sessionStorage.getItem('coze_user_id');
+        
         if (!clientUserId) {
             // 生成唯一ID：时间戳 + 双重随机数（确保绝对不重复）
             clientUserId = 'user_' + new Date().getTime() + '_' + 
@@ -56,6 +58,11 @@
         }
         
         console.log('🔑 当前用户ID:', clientUserId); // 方便调试
+        
+        // 🔧 生成独立的 Conversation ID（每次刷新都不同）
+        const conversationId = 'conv_' + new Date().getTime() + '_' + 
+                              Math.random().toString(36).slice(2);
+        console.log('💬 当前会话ID:', conversationId);
         
         // 🔧 修复2：添加错误处理
         try {
@@ -68,6 +75,12 @@
                     token: 'pat_vShCWDu8XIDPZhUI5NVJCwBKa95jZTY7kQsJBwvHUAz3RErR8u2aCff9pN3LIMOh',
                     onRefreshToken: async () => ''
                 },
+                userInfo: {
+                    id: clientUserId, // ✅ 使用生成的用户ID
+                    url: 'https://lf-coze-web-cdn.coze.cn/obj/eden-cn/lm-lgvj/ljhwZthlaukjlkulzlp/coze/coze-logo.png',
+                    nickname: '炫舞玩家_' + clientUserId.slice(-6), // 显示ID后6位
+                },
+                conversation_id: conversationId, // ✅ 使用独立的会话ID
                 ui: {
                     base: {
                         icon: 'https://lf-coze-web-cdn.coze.cn/obj/eden-cn/lm-lgvj/ljhwZthlaukjlkulzlp/coze/chatsdk-logo.png',
@@ -104,6 +117,7 @@
             });
             
             console.log('✅ Coze SDK 初始化成功！');
+            console.log('📊 用户信息:', { userId: clientUserId, conversationId: conversationId });
             
             // 隐藏加载提示
             setTimeout(() => {
@@ -112,7 +126,7 @@
             
         } catch (error) {
             console.error('❌ Coze SDK 初始化失败:', error);
-            document.getElementById('loading').innerHTML = '聊天助手加载失败，请刷新页面重试';
+            document.getElementById('loading').innerHTML = '聊天助手加载失败，请刷新页面重试<br>错误: ' + error.message;
             document.getElementById('loading').style.background = 'rgba(255,0,0,0.7)';
         }
     });
