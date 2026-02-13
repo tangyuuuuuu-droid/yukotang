@@ -4,10 +4,6 @@
     <meta charset="utf-8">
     <title>炫舞圆宝助手</title>
     
-    <!-- 禁用缓存，防止用户看到旧版本 -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     
     <style>
         body {
@@ -51,9 +47,6 @@
     // 🔧 核心修复：等待 SDK 加载完成
     window.addEventListener('load', function() {
         
-        // 🔧 修复1：使用 sessionStorage 缓存用户ID（刷新页面不会丢失）
-        let clientUserId = sessionStorage.getItem('coze_user_id');
-        
         if (!clientUserId) {
             // 生成唯一ID：时间戳 + 双重随机数（确保绝对不重复）
             clientUserId = 'user_' + new Date().getTime() + '_' + 
@@ -74,11 +67,6 @@
                     type: 'token',
                     token: 'pat_vShCWDu8XIDPZhUI5NVJCwBKa95jZTY7kQsJBwvHUAz3RErR8u2aCff9pN3LIMOh',
                     onRefreshToken: async () => ''
-                },
-                userInfo: {
-                    id: clientUserId, // 使用缓存的用户ID
-                    url: 'https://lf-coze-web-cdn.coze.cn/obj/eden-cn/lm-lgvj/ljhwZthlaukjlkulzlp/coze/coze-logo.png',
-                    nickname: '炫舞玩家_' + clientUserId.slice(-4), // 昵称加后缀，方便区分
                 },
                 ui: {
                     base: {
